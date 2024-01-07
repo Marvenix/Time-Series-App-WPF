@@ -1,0 +1,24 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+                    xmlns:s="clr-namespace:System;assembly=mscorlib">
+    
+    
+    <s:String x:Key="File">File</s:String>
+    <s:String x:Key="File-Open">Open</s:String>
+    <s:String x:Key="File-Save">Save</s:String>
+    <s:String x:Key="File-Exit">Exit</s:String>
+    <s:String x:Key="Edit">Edit</s:String>
+    <s:String x:Key="Edit-AddAnnotation">Add annotation</s:String>
+    <s:String x:Key="Edit-Language">Languages...</s:String>
+    <s:String x:Key="Language-En">English</s:String>
+    <s:String x:Key="Language-Pl">Polish</s:String>
+    <s:String x:Key="Help">Help</s:String>
+    <s:String x:Key="Help-ProgramInfo">About program</s:String>
+    <s:String x:Key="OpenFileDialog-Filter">Biosignal files (*.edf;*.bdf;*.xml)|*.edf;*.bdf;*.xml</s:String>
+    <s:String x:Key="Exception-Unknown">An unknown error has occured!</s:String>
+    <s:String x:Key="ChangeLanguage-Exception">Can't find language resources file!</s:String>
+    <s:String x:Key="OpenFile-FileLoadException">Can't read a file!</s:String>
+    <s:String x:Key="OpenFile-ArgumentException">Displaying chart error!</s:String>
+    <s:String x:Key="Error">Error</s:String>
+
+</ResourceDictionary>

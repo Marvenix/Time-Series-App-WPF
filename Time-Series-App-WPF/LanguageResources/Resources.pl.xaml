@@ -1,0 +1,23 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+                    xmlns:s="clr-namespace:System;assembly=mscorlib">
+
+    <s:String x:Key="File">Plik</s:String>
+    <s:String x:Key="File-Open">Otwórz</s:String>
+    <s:String x:Key="File-Save">Zapisz</s:String>
+    <s:String x:Key="File-Exit">Wyjdź</s:String>
+    <s:String x:Key="Edit">Edytuj</s:String>
+    <s:String x:Key="Edit-AddAnnotation">Dodaj adnotację</s:String>
+    <s:String x:Key="Edit-Language">Języki...</s:String>
+    <s:String x:Key="Language-En">Angielski</s:String>
+    <s:String x:Key="Language-Pl">Polski</s:String>
+    <s:String x:Key="Help">Pomoc</s:String>
+    <s:String x:Key="Help-ProgramInfo">O programie</s:String>
+    <s:String x:Key="OpenFileDialog-Filter">Pliki biomedyczne (*.edf;*.bdf;*.xml)|*.edf;*.bdf;*.xml</s:String>
+    <s:String x:Key="Exception-Unknown">Wystąpił nieznany błąd!</s:String>
+    <s:String x:Key="ChangeLanguage-Exception">Nie odnaleziono językowego pliku zasobów!</s:String>
+    <s:String x:Key="OpenFile-FileLoadException">Błąd odczytu pliku!</s:String>
+    <s:String x:Key="OpenFile-ArgumentException">Błąd wyświetlania wykresu!</s:String>
+    <s:String x:Key="Error">Błąd</s:String>
+    
+</ResourceDictionary>

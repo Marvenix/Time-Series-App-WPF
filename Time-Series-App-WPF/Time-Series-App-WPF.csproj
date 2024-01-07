@@ -6,6 +6,7 @@
     <RootNamespace>Time_Series_App_WPF</RootNamespace>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,10 +19,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Model\" />
+    <Folder Include="Libraries\64-bit\" />
+    <Folder Include="Libraries\32-bit\" />
     <Folder Include="Context\" />
-    <Folder Include="ViewModel\" />
-    <Folder Include="Services\" />
+    <Folder Include="Services\Charts\" />
+    <Folder Include="Services\Annotations\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="biosigWIN64.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  
 </Project>

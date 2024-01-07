@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Windows;
+using Time_Series_App_WPF.Services.Files;
+using Time_Series_App_WPF.ViewModel;
 
 namespace Time_Series_App_WPF
 {
@@ -13,7 +15,9 @@ namespace Time_Series_App_WPF
             AppHost = Host.CreateDefaultBuilder()
                 .ConfigureServices((hostContext, services) => 
                 {
+                    services.AddSingleton<MainWindowViewModel>();
                     services.AddSingleton<MainWindow>();
+                    services.AddSingleton<IFileService, FileService>();
                 })
                 .Build();
         }

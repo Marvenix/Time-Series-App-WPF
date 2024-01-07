@@ -3,13 +3,43 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Time_Series_App_WPF"
-        xmlns:a="clr-namespace:ScottPlot;assembly=ScottPlot.WPF"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        <ScrollViewer>
-            <StackPanel x:Name="coopa"></StackPanel>
-        </ScrollViewer>
-    </Grid>
+
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+
+            <MenuItem Header="{DynamicResource File}">
+                <MenuItem Header="{DynamicResource File-Open}" Click="OpenFile_Click" />
+                <MenuItem Header="{DynamicResource File-Save}"/>
+                <MenuItem Header="{DynamicResource File-Exit}"/>
+            </MenuItem>
+
+            <MenuItem Header="{DynamicResource Edit}">
+                <MenuItem Header="{DynamicResource Edit-AddAnnotation}"/>
+                <MenuItem Header="{DynamicResource Edit-Language}">
+                    <MenuItem Header="{DynamicResource Language-En}" Command="{Binding ChangeLanguageCommand}" CommandParameter="en" />
+                    <MenuItem Header="{DynamicResource Language-Pl}" Command="{Binding ChangeLanguageCommand}" CommandParameter="pl" />
+                </MenuItem>
+            </MenuItem>
+
+            <MenuItem Header="{DynamicResource Help}">
+                <MenuItem Header="{DynamicResource Help-ProgramInfo}"/>
+            </MenuItem>
+        </Menu>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="7*"/>
+                <ColumnDefinition Width="3*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="3*"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+
+            <Border Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2"></Border>
+            <Border Grid.Column="0" Grid.Row="0"></Border>
+            <Border Grid.Column="1" Grid.Row="0"></Border>
+        </Grid>
+    </DockPanel>
 </Window>
