@@ -1,0 +1,30 @@
+﻿<Window x:Class="Time_Series_App_WPF.View.EditAnnotationWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Time_Series_App_WPF.View"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        mc:Ignorable="d"
+        Title="{DynamicResource EditAnnotationWindow-Title}" Height="450" Width="800">
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25*"/>
+            <RowDefinition Height="6*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" HorizontalAlignment="Left" Margin="180,65,0,0" Text="{DynamicResource AddEditAnnotationWindow-Name}" VerticalAlignment="Top" Height="21" Width="54" TextAlignment="Center" />
+        <TextBox Grid.Row="0" HorizontalAlignment="Left" Margin="147,98,0,0" VerticalAlignment="Top" Height="25" Width="120" VerticalContentAlignment="Center" Text="{Binding Name}"/>
+        <TextBlock Grid.Row="0" HorizontalAlignment="Right" Margin="0,65,180,0" Text="{DynamicResource AddEditAnnotationWindow-Color}" VerticalAlignment="Top" Height="21" Width="54" TextAlignment="Center" />
+        <xctk:ColorPicker Grid.Row="0" HorizontalAlignment="Right" Margin="0,98,147,0" VerticalAlignment="Top" Height="25" Width="120" SelectedColor="{Binding Color}"/>
+        <Button Content="{DynamicResource AnnotationWindow-Edit}" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" Height="45" Width="650" Command="{Binding EditAnnotationCommand}">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="Click">
+                    <i:CallMethodAction MethodName="Close" TargetObject="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" />
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </Button>
+    </Grid>
+</Window>

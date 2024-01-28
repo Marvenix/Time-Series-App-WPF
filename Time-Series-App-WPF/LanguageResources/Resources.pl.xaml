@@ -7,7 +7,7 @@
     <s:String x:Key="File-Save">Zapisz</s:String>
     <s:String x:Key="File-Exit">Wyjdź</s:String>
     <s:String x:Key="Edit">Edytuj</s:String>
-    <s:String x:Key="Edit-AddAnnotation">Dodaj adnotację</s:String>
+    <s:String x:Key="Edit-Annotation">Adnotacje...</s:String>
     <s:String x:Key="Edit-Language">Języki...</s:String>
     <s:String x:Key="Language-En">Angielski</s:String>
     <s:String x:Key="Language-Pl">Polski</s:String>
@@ -19,5 +19,29 @@
     <s:String x:Key="OpenFile-FileLoadException">Błąd odczytu pliku!</s:String>
     <s:String x:Key="OpenFile-ArgumentException">Błąd wyświetlania wykresu!</s:String>
     <s:String x:Key="Error">Błąd</s:String>
-    
+    <s:String x:Key="MainWindow-Title">Ekran główny</s:String>
+    <s:String x:Key="AnnotationWindow-Title">Zarządzanie adnotacjami</s:String>
+    <s:String x:Key="AddAnnotationWindow-Title">Dodaj adnotację</s:String>
+    <s:String x:Key="EditAnnotationWindow-Title">Edytuj adnotację</s:String>
+    <s:String x:Key="AnnotationWindow-Add">Dodaj</s:String>
+    <s:String x:Key="AnnotationWindow-Remove">Usuń</s:String>
+    <s:String x:Key="AnnotationWindow-Edit">Edytuj</s:String>
+    <s:String x:Key="AddEditAnnotationWindow-Name">Nazwa</s:String>
+    <s:String x:Key="AddEditAnnotationWindow-Color">Kolor</s:String>
+    <s:String x:Key="AnnotationWindow-Remove-Error">Nie można znaleźć adnotacji do usunięcia!</s:String>
+    <s:String x:Key="AddEditAnnotationWindow-Edit-Error">Błąd edycji adnotacji!</s:String>
+    <s:String x:Key="AddEditAnnotationWindow-Add-Error">Błąd dodawania adnotacji!</s:String>
+    <s:String x:Key="Scroll-Zoom-Button">Scroll-zoom</s:String>
+    <s:String x:Key="Scroll-Navigation-Button">Scroll-nawigacja</s:String>
+    <s:String x:Key="Annotation-Mode-Button">Tryb adnotacji</s:String>
+    <s:String x:Key="ProgramInfo">Autor: Michał Łyczek</s:String>
+    <s:String x:Key="TabControl-Header-Charts">Wykresy</s:String>
+    <s:String x:Key="TabControl-Header-Annotations">Dodane adnotacje</s:String>
+    <s:String x:Key="MainWindow-PickAnnotationType">Wybierz rodzaj adnotacji:</s:String>
+    <s:String x:Key="MainWindow-MadeAnnotation-Start">Start</s:String>
+    <s:String x:Key="MainWindow-MadeAnnotation-End">Koniec</s:String>
+    <s:String x:Key="MainWindow-MadeAnnotation-Duration">Czas</s:String>
+    <s:String x:Key="MainWindow-MadeAnnotation-Channel">Sygnał</s:String>
+    <s:String x:Key="MainWindow-RemoveMadeAnnotation-Error">Coś poszło nie tak z usuwaniem zrobionej adnotacji!</s:String>
+
 </ResourceDictionary>

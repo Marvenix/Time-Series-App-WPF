@@ -1,7 +1,17 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
+using System.Collections.ObjectModel;
+using System.IO;
 using System.Windows;
+using Time_Series_App_WPF.Context;
+using Time_Series_App_WPF.Model;
+using Time_Series_App_WPF.Services.Annotations;
+using Time_Series_App_WPF.Services.Charts;
 using Time_Series_App_WPF.Services.Files;
+using Time_Series_App_WPF.View;
 using Time_Series_App_WPF.ViewModel;
 
 namespace Time_Series_App_WPF
@@ -16,8 +26,20 @@ namespace Time_Series_App_WPF
                 .ConfigureServices((hostContext, services) => 
                 {
                     services.AddSingleton<MainWindowViewModel>();
+                    services.AddTransient<AnnotationWindowViewModel>();
+                    services.AddTransient<AddEditAnnotationWindowViewModel>();
                     services.AddSingleton<MainWindow>();
+                    services.AddTransient<AnnotationWindow>();
+                    services.AddTransient<AddAnnotationWindow>();
+                    services.AddTransient<EditAnnotationWindow>();
+                    services.AddTransient<ProgramInfoWindow>();
                     services.AddSingleton<IFileService, FileService>();
+                    services.AddSingleton<IChartService<SignalChartData>, SignalChartService>();
+                    services.AddTransient<IAnnotationService, AnnotationService>();
+                    services.AddSingleton<IMessenger, WeakReferenceMessenger>();
+                    services.AddSingleton<DataHolder<Annotation>>();
+                    services.AddSingleton<ListDataHolder<Annotation>>();
+                    services.AddDbContext<ApplicationDbContext>();
                 })
                 .Build();
         }

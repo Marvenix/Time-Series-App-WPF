@@ -3,8 +3,15 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:local="clr-namespace:Time_Series_App_WPF.View"
+        xmlns:scottplot="clr-namespace:ScottPlot.WPF;assembly=ScottPlot.WPF"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="{DynamicResource MainWindow-Title}" Height="450" Width="800">
+
+    <Window.Resources>
+        <local:ItemIndexConverter x:Key="ItemIndexConverter" />
+    </Window.Resources>
 
     <DockPanel>
         <Menu DockPanel.Dock="Top">
@@ -12,11 +19,17 @@
             <MenuItem Header="{DynamicResource File}">
                 <MenuItem Header="{DynamicResource File-Open}" Click="OpenFile_Click" />
                 <MenuItem Header="{DynamicResource File-Save}"/>
-                <MenuItem Header="{DynamicResource File-Exit}"/>
+                <MenuItem Header="{DynamicResource File-Exit}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Click">
+                            <i:CallMethodAction MethodName="Close" TargetObject="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </MenuItem>
             </MenuItem>
 
             <MenuItem Header="{DynamicResource Edit}">
-                <MenuItem Header="{DynamicResource Edit-AddAnnotation}"/>
+                <MenuItem Header="{DynamicResource Edit-Annotation}" Command="{Binding ShowAnnotationWindowCommand}"/>
                 <MenuItem Header="{DynamicResource Edit-Language}">
                     <MenuItem Header="{DynamicResource Language-En}" Command="{Binding ChangeLanguageCommand}" CommandParameter="en" />
                     <MenuItem Header="{DynamicResource Language-Pl}" Command="{Binding ChangeLanguageCommand}" CommandParameter="pl" />
@@ -24,22 +37,176 @@
             </MenuItem>
 
             <MenuItem Header="{DynamicResource Help}">
-                <MenuItem Header="{DynamicResource Help-ProgramInfo}"/>
+                <MenuItem Header="{DynamicResource Help-ProgramInfo}" Command="{Binding ShowProgramInfoWindowCommand}" />
             </MenuItem>
         </Menu>
+
+        <ToolBarTray DockPanel.Dock="Top" Background="White">
+            
+            <ToolBar Band="1" BandIndex="1">
+                <RadioButton Content="{DynamicResource Scroll-Navigation-Button}" Width="100" Height="30" x:Name="Navigation" IsChecked="{Binding IsCheckedScrollNavigationButton}" />
+                <RadioButton Content="{DynamicResource Scroll-Zoom-Button}" Width="100" Height="30" x:Name="Zoom" />
+            </ToolBar>
+
+            <ToolBar Band="1" BandIndex="2">
+                <ToggleButton Content="{DynamicResource Annotation-Mode-Button}" Width="100" Height="30" x:Name="Annotation" 
+                              IsEnabled="{Binding IsEnabledAnnotationMakeModeButton}" IsChecked="{Binding IsCheckedAnnotationMakeModeButton}" />
+            </ToolBar>
+            
+        </ToolBarTray>
+        
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="7*"/>
-                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="3*"/>
+                <RowDefinition Height="5*"/>
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
 
-            <Border Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2"></Border>
-            <Border Grid.Column="0" Grid.Row="0"></Border>
+            <Border Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"/>
             <Border Grid.Column="1" Grid.Row="0"></Border>
+            <Border Grid.Column="1" Grid.Row="1"></Border>
+
+            <TabControl Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
+
+                <TabItem Header="{DynamicResource TabControl-Header-Charts}">
+                    <ScrollViewer PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
+                        <ItemsControl ItemsSource="{Binding MainWindowPlots}">
+
+                            <ItemsControl.ItemContainerStyle>
+                                <Style TargetType="scottplot:WpfPlot">
+                                    <EventSetter Event="MouseUp" Handler="ContentPresenter_MouseUp" />
+                                    <EventSetter Event="MouseDown" Handler="ContentPresenter_MouseDown" />
+                                    <EventSetter Event="MouseMove" Handler="ContentPresenter_MouseMove" />
+                                </Style>
+                            </ItemsControl.ItemContainerStyle>
+                             
+                        </ItemsControl>
+                    </ScrollViewer>
+                </TabItem>
+
+                <TabItem Header="{DynamicResource TabControl-Header-Annotations}">
+
+                    <local:AutoRefreshDataGrid ItemsSource="{Binding MadeAnnotations}" AutoGenerateColumns="False" VerticalScrollBarVisibility="Visible"
+                    CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeColumns="False" CanUserResizeRows="False" 
+                    CanUserReorderColumns="False" RowHeight="35" IsReadOnly="True">
+
+                        <DataGrid.Resources>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGrid.Resources>
+
+                        <DataGrid.Columns>
+
+                            <DataGridTextColumn Width="1*" Header="#" Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGridRow}}, Converter={StaticResource ItemIndexConverter}}">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                                        <Setter Property="TextAlignment" Value="Center"></Setter>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+
+                            <DataGridTextColumn Width="1*" Header="{DynamicResource MainWindow-MadeAnnotation-Channel}" Binding="{Binding Channel}">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                                        <Setter Property="TextAlignment" Value="Center"></Setter>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+
+                            <DataGridTextColumn Width="1*" Header="{DynamicResource AddEditAnnotationWindow-Name}" Binding="{Binding Annotation.Name}">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                                        <Setter Property="TextAlignment" Value="Center"></Setter>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+
+                            <DataGridTemplateColumn Width="1*" Header="{DynamicResource AddEditAnnotationWindow-Color}">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Rectangle Width="Auto" Height="Auto" Fill="{Binding Annotation.Color}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTextColumn Width="1*" Header="{DynamicResource MainWindow-MadeAnnotation-Start}" Binding="{Binding Start}">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                                        <Setter Property="TextAlignment" Value="Center"></Setter>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+
+                            <DataGridTextColumn Width="1*" Header="{DynamicResource MainWindow-MadeAnnotation-End}" Binding="{Binding End}">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                                        <Setter Property="TextAlignment" Value="Center"></Setter>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+
+                            <DataGridTextColumn Width="1*" Header="{DynamicResource MainWindow-MadeAnnotation-Duration}" Binding="{Binding Duration}">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                                        <Setter Property="TextAlignment" Value="Center"></Setter>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+
+                            <DataGridTemplateColumn Width="1*" Header="{DynamicResource AnnotationWindow-Remove}">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Content="{DynamicResource AnnotationWindow-Remove}" Width="Auto" Height="Auto" Command="{Binding DataContext.RemoveMadeAnnotationCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding Id}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                        </DataGrid.Columns>
+                        
+                    </local:AutoRefreshDataGrid>
+
+                </TabItem>
+            </TabControl>
+
+            <Grid Grid.Row="1">
+
+                <TextBlock Text="{DynamicResource MainWindow-PickAnnotationType}" Height="30" Width="200" HorizontalAlignment="Left" Margin="50, 0, 0, 0" Padding="3" FontSize="14" />
+
+                <local:AutoRefreshComboBox Height="30" Width="200" ItemsSource="{Binding AnnotationTypes}" HorizontalAlignment="Right" Margin="0, 0, 50, 0" SelectedItem="{Binding SelectedAnnotation}">
+
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="SelectionChanged">
+                            <i:InvokeCommandAction Command="{Binding SelectionChangedCommand}" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Rectangle Fill="{Binding Color}" Width="16" Height="16" Margin="0,2,5,2" />
+                                <TextBlock Text="{Binding Name}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </local:AutoRefreshComboBox>
+                
+            </Grid>
+            
         </Grid>
     </DockPanel>
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding GetAnnotationTypesCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
 </Window>

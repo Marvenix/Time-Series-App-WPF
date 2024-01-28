@@ -10,6 +10,6 @@ namespace Time_Series_App_WPF.Services.Files
     public interface IFileService
     {
         public List<SignalChartData> ChannelsData { get; }
-        public void ReadFile(string path);
+        public void OpenFile(string path);
     }
 }
