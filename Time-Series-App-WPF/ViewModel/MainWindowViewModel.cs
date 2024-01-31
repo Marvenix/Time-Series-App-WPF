@@ -22,39 +22,53 @@ using Time_Series_App_WPF.View;
 using System.Windows.Input;
 using Time_Series_App_WPF.Services.Annotations;
 using ScottPlot.Plottables;
+using CommunityToolkit.Mvvm.Messaging;
+using Time_Series_App_WPF.Messages;
+using System.Windows.Media;
 
 namespace Time_Series_App_WPF.ViewModel
 {
-    public partial class MainWindowViewModel : BaseViewModel
+    public partial class MainWindowViewModel : BaseViewModel, IRecipient<RemoveAnnotationItemMessage>, IRecipient<EditMadeAnnotationItemMessage>
     {
         private readonly IFileService _fileService;
         private readonly IChartService<SignalChartData> _signalChartService;
         private readonly ListDataHolder<Annotation> _annotationListDataHolder;
         private readonly IAnnotationService _annotationService;
+        private readonly IMessenger _messenger;
         private ObservableCollection<WpfPlot> _mainWindowPlots;
-        private ObservableCollection<Annotation> _annotationTypes; 
+        private ObservableCollection<Annotation> _annotationTypes;
         private ObservableCollection<MadeAnnotation> _madeAnnotations;
+
+        private bool _isFileLoaded;
 
         [ObservableProperty]
         private Annotation? _selectedAnnotation;
 
         [ObservableProperty]
-        private bool _isEnabledAnnotationMakeModeButton;
+        private bool _isCheckedScrollNavigationButton;
 
         [ObservableProperty]
-        private bool _isCheckedScrollNavigationButton;
+        private bool _isEnabledAnnotationMakeModeButton;
 
         [ObservableProperty]
         private bool _isCheckedAnnotationMakeModeButton;
 
+        [ObservableProperty]
+        private bool _isEnabledAnnotationEditModeButton;
+
+        [ObservableProperty]
+        private bool _isCheckedAnnotationEditModeButton;
+
         public event EventHandler? AnnotationWindowRequest;
         public event EventHandler? ProgramInfoWindowRequest;
+        public event EventHandler? ChangeViewValuesRequest;
         public ObservableCollection<WpfPlot> MainWindowPlots { get { return _mainWindowPlots; } }
         public ObservableCollection<Annotation> AnnotationTypes { get { return _annotationTypes; } }
         public ObservableCollection<MadeAnnotation> MadeAnnotations { get { return _madeAnnotations; } }
 
 
-        public MainWindowViewModel(IFileService fileService, IChartService<SignalChartData> signalChartService, ListDataHolder<Annotation> listDataHolder, IAnnotationService annotationService)
+        public MainWindowViewModel(IFileService fileService, IChartService<SignalChartData> signalChartService, ListDataHolder<Annotation> listDataHolder, 
+            IAnnotationService annotationService, IMessenger messenger)
         {
             _fileService = fileService;
             _signalChartService = signalChartService;
@@ -63,7 +77,63 @@ namespace Time_Series_App_WPF.ViewModel
             _annotationListDataHolder = listDataHolder;
             _annotationService = annotationService;
             _madeAnnotations = new ObservableCollection<MadeAnnotation>();
+            _messenger = messenger;
+            _messenger.Register<RemoveAnnotationItemMessage>(this);
+            _messenger.Register<EditMadeAnnotationItemMessage>(this);
             _isCheckedScrollNavigationButton = true;
+        }
+
+        private void ChangeViewValues()
+        {
+            this.ChangeViewValuesRequest?.Invoke(this, new EventArgs());
+        }
+        private void EditMadeAnnotationPolygon(MadeAnnotation madeAnnotation)
+        {
+            var plotControl = _mainWindowPlots.FirstOrDefault(x => x.Uid == madeAnnotation.ChannelId);
+
+            if (plotControl != null)
+            {
+                var graphicAnnotation = plotControl.Plot.PlottableList.FirstOrDefault(x => x is Polygon && ((Polygon)x).Label == madeAnnotation.Id.ToString());
+
+                if (graphicAnnotation != null)
+                {
+                    var colorToConvert = (System.Windows.Media.Color)ColorConverter.ConvertFromString(madeAnnotation.Annotation!.Color);
+                    ((Polygon)graphicAnnotation).FillStyle.Color = new ScottPlot.Color(colorToConvert.R, colorToConvert.G, colorToConvert.B).WithAlpha(.3);
+                    plotControl.Refresh();
+                    return;
+                }
+            }
+
+            ShowMessageBox((string)Application.Current.TryFindResource("MainWindow-EditMadeAnnotationPolygons-Error"), (string)Application.Current.TryFindResource("Error"));
+        }
+        public void Receive(EditMadeAnnotationItemMessage message)
+        {
+            var madeAnnotationsToEdit = _madeAnnotations.Where(x => x.Annotation == message.Value).ToList();
+
+            if (madeAnnotationsToEdit != null)
+            {
+                foreach (var madeAnnotation in madeAnnotationsToEdit)
+                {
+                    EditMadeAnnotationPolygon(madeAnnotation);
+
+                    var madeAnnotationInList = _madeAnnotations.First(x => x.Id == madeAnnotation.Id);
+                    var index = _madeAnnotations.IndexOf(madeAnnotationInList);
+
+                    _madeAnnotations[index] = madeAnnotationInList;
+                }
+            }
+        }
+        public void Receive(RemoveAnnotationItemMessage message)
+        {
+            var madeAnnotationsToRemove = _madeAnnotations.Where(x => x.Annotation == message.Value).ToList();
+
+            if (madeAnnotationsToRemove != null)
+            {
+                foreach (var madeAnnotation in madeAnnotationsToRemove)
+                {
+                    RemoveMadeAnnotation(madeAnnotation.Id);
+                }
+            }
         }
 
         [RelayCommand]
@@ -83,6 +153,7 @@ namespace Time_Series_App_WPF.ViewModel
                     {
                         plotControl.Plot.PlottableList.Remove(graphicAnnotation);
                         _madeAnnotations.Remove(madeAnnotation);
+                        ChangeViewValues();
                         plotControl.Refresh();
                         return;
                     }
@@ -99,9 +170,29 @@ namespace Time_Series_App_WPF.ViewModel
         }
 
         [RelayCommand]
+        private void EditMadeAnnotation(MadeAnnotation editedAnnotation)
+        {
+            var madeAnnotation = _madeAnnotations.FirstOrDefault(x => x.Id == editedAnnotation.Id);
+
+            if (madeAnnotation != null)
+            {
+                madeAnnotation.Start = editedAnnotation.Start;
+                madeAnnotation.End = editedAnnotation.End;
+                madeAnnotation.Duration = editedAnnotation.Duration;
+
+                var index = _madeAnnotations.IndexOf(madeAnnotation);
+                _madeAnnotations[index] = madeAnnotation;
+            }
+            else
+            {
+                ShowMessageBox((string)Application.Current.TryFindResource("MainWindow-EditMadeAnnotation-Error"), (string)Application.Current.TryFindResource("Error"));
+            }
+        }
+
+        [RelayCommand]
         private void SelectionChanged()
         {
-            IsEnabledAnnotationMakeModeButton = SelectedAnnotation != null ? true : false;
+            IsEnabledAnnotationMakeModeButton = SelectedAnnotation != null && _isFileLoaded ? true : false;
             if (!IsEnabledAnnotationMakeModeButton)
                 IsCheckedAnnotationMakeModeButton = false;
         }
@@ -222,6 +313,13 @@ namespace Time_Series_App_WPF.ViewModel
                 _fileService.OpenFile(fileName);
 
                 SetupAndShowCharts();
+
+                if (!_isFileLoaded)
+                {
+                    IsEnabledAnnotationEditModeButton = true;
+                    _isFileLoaded = true;
+                    SelectionChanged();
+                }
             }
             catch (FileLoadException)
             {

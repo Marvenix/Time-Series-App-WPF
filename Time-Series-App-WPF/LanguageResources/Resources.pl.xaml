@@ -33,7 +33,7 @@
     <s:String x:Key="AddEditAnnotationWindow-Add-Error">Błąd dodawania adnotacji!</s:String>
     <s:String x:Key="Scroll-Zoom-Button">Scroll-zoom</s:String>
     <s:String x:Key="Scroll-Navigation-Button">Scroll-nawigacja</s:String>
-    <s:String x:Key="Annotation-Mode-Button">Tryb adnotacji</s:String>
+    <s:String x:Key="Annotation-AddMode-Button">Dodawanie adnotacji</s:String>
     <s:String x:Key="ProgramInfo">Autor: Michał Łyczek</s:String>
     <s:String x:Key="TabControl-Header-Charts">Wykresy</s:String>
     <s:String x:Key="TabControl-Header-Annotations">Dodane adnotacje</s:String>
@@ -43,5 +43,8 @@
     <s:String x:Key="MainWindow-MadeAnnotation-Duration">Czas</s:String>
     <s:String x:Key="MainWindow-MadeAnnotation-Channel">Sygnał</s:String>
     <s:String x:Key="MainWindow-RemoveMadeAnnotation-Error">Coś poszło nie tak z usuwaniem zrobionej adnotacji!</s:String>
+    <s:String x:Key="Annotation-EditMode-Button">Edycja adnotacji</s:String>
+    <s:String x:Key="MainWindow-EditMadeAnnotation-Error">Coś poszło nie tak z edycją zrobionej adnotacji!</s:String>
+    <s:String x:Key="MainWindow-EditMadeAnnotationPolygons-Error">Coś poszło nie tak z edycją grafiki zrobionej adnotacji!</s:String>
 
 </ResourceDictionary>

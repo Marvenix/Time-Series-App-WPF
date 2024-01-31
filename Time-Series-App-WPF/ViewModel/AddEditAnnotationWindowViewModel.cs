@@ -52,7 +52,7 @@ namespace Time_Series_App_WPF.ViewModel
                 };
 
                 await _annotationService.CreateAsync(annotation);
-                _messenger.Send(new AddItemMessage(annotation));
+                _messenger.Send(new AddAnnotationItemMessage(annotation));
             }
             else
             {
@@ -75,7 +75,7 @@ namespace Time_Series_App_WPF.ViewModel
 
                 if (updatedAnnotation != null)
                 {
-                    _messenger.Send(new EditItemMessage(updatedAnnotation));
+                    _messenger.Send(new EditAnnotationItemMessage(updatedAnnotation));
                 }
                 else
                 {

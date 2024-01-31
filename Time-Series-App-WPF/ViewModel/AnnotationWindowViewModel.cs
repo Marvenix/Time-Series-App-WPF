@@ -16,7 +16,7 @@ using Time_Series_App_WPF.View;
 
 namespace Time_Series_App_WPF.ViewModel
 {
-    public partial class AnnotationWindowViewModel : BaseViewModel, IRecipient<AddItemMessage>, IRecipient<EditItemMessage>
+    public partial class AnnotationWindowViewModel : BaseViewModel, IRecipient<AddAnnotationItemMessage>, IRecipient<EditAnnotationItemMessage>
     {
         private readonly ObservableCollection<Annotation> _annotationTypes;
         private readonly IAnnotationService _annotationService;
@@ -34,8 +34,8 @@ namespace Time_Series_App_WPF.ViewModel
             _annotationDataHolder = annotationDataHolder;
             _annotationListDataHolder = annotationListDataHolder;
             _messenger = messenger;
-            _messenger.Register<AddItemMessage>(this);
-            _messenger.Register<EditItemMessage>(this);
+            _messenger.Register<AddAnnotationItemMessage>(this);
+            _messenger.Register<EditAnnotationItemMessage>(this);
             _annotationTypes = (ObservableCollection<Annotation>)_annotationListDataHolder.Data!;
         }
 
@@ -69,6 +69,7 @@ namespace Time_Series_App_WPF.ViewModel
 
             if (annotation != null && _annotationTypes.Contains(annotation))
             {
+                _messenger.Send(new RemoveAnnotationItemMessage(annotation));
                 _annotationTypes.Remove(annotation);
             }
             else
@@ -77,12 +78,12 @@ namespace Time_Series_App_WPF.ViewModel
             }
         }
 
-        public void Receive(AddItemMessage message)
+        public void Receive(AddAnnotationItemMessage message)
         {
             _annotationTypes.Add(message.Value);
         }
 
-        public void Receive(EditItemMessage message)
+        public void Receive(EditAnnotationItemMessage message)
         {
             if (_annotationTypes.Contains(message.Value))
             {
@@ -92,6 +93,8 @@ namespace Time_Series_App_WPF.ViewModel
 
                 var index = _annotationTypes.IndexOf(annotation);
                 _annotationTypes[index] = annotation;
+
+                _messenger.Send(new EditMadeAnnotationItemMessage(annotation));
             }
         }
     }

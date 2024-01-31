@@ -8,9 +8,9 @@ using Time_Series_App_WPF.Model;
 
 namespace Time_Series_App_WPF.Messages
 {
-    public class AddItemMessage : ValueChangedMessage<Annotation>
+    public class RemoveAnnotationItemMessage : ValueChangedMessage<Annotation>
     {
-        public AddItemMessage(Annotation annotation) : base(annotation)
+        public RemoveAnnotationItemMessage(Annotation annotation) : base(annotation)
         {
 
         }

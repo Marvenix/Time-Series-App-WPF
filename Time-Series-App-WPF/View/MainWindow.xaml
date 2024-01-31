@@ -49,8 +49,27 @@
             </ToolBar>
 
             <ToolBar Band="1" BandIndex="2">
-                <ToggleButton Content="{DynamicResource Annotation-Mode-Button}" Width="100" Height="30" x:Name="Annotation" 
-                              IsEnabled="{Binding IsEnabledAnnotationMakeModeButton}" IsChecked="{Binding IsCheckedAnnotationMakeModeButton}" />
+
+                <RadioButton Content="{DynamicResource Annotation-AddMode-Button}" Width="100" Height="30" x:Name="AnnotationMake" 
+                    IsEnabled="{Binding IsEnabledAnnotationMakeModeButton}" IsChecked="{Binding IsCheckedAnnotationMakeModeButton}" Checked="AnnotationMake_Checked">
+                    <RadioButton.Template>
+                        <ControlTemplate>
+                            <ToggleButton IsChecked="{Binding IsChecked, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                Content="{Binding Content, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" />
+                        </ControlTemplate>
+                    </RadioButton.Template>
+                </RadioButton>
+
+                <RadioButton Content="{DynamicResource Annotation-EditMode-Button}" Width="100" Height="30" IsEnabled="{Binding IsEnabledAnnotationEditModeButton}" x:Name="AnnotationEdit"
+                             IsChecked="{Binding IsCheckedAnnotationEditModeButton}">
+                    <RadioButton.Template>
+                        <ControlTemplate>
+                            <ToggleButton IsChecked="{Binding IsChecked, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                Content="{Binding Content, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" />
+                        </ControlTemplate>
+                    </RadioButton.Template>
+                </RadioButton>
+                
             </ToolBar>
             
         </ToolBarTray>
@@ -71,7 +90,7 @@
             <TabControl Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
 
                 <TabItem Header="{DynamicResource TabControl-Header-Charts}">
-                    <ScrollViewer PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
+                    <ScrollViewer PreviewMouseWheel="ScrollViewer_PreviewMouseWheel" KeyDown="ScrollViewer_KeyDown">
                         <ItemsControl ItemsSource="{Binding MainWindowPlots}">
 
                             <ItemsControl.ItemContainerStyle>
@@ -79,6 +98,7 @@
                                     <EventSetter Event="MouseUp" Handler="ContentPresenter_MouseUp" />
                                     <EventSetter Event="MouseDown" Handler="ContentPresenter_MouseDown" />
                                     <EventSetter Event="MouseMove" Handler="ContentPresenter_MouseMove" />
+                                    <EventSetter Event="MouseLeave" Handler="WpfPlot_MouseLeave" />
                                 </Style>
                             </ItemsControl.ItemContainerStyle>
                              
@@ -90,7 +110,7 @@
 
                     <local:AutoRefreshDataGrid ItemsSource="{Binding MadeAnnotations}" AutoGenerateColumns="False" VerticalScrollBarVisibility="Visible"
                     CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeColumns="False" CanUserResizeRows="False" 
-                    CanUserReorderColumns="False" RowHeight="35" IsReadOnly="True">
+                    CanUserReorderColumns="False" RowHeight="35" IsReadOnly="True" EnableRowVirtualization="False">
 
                         <DataGrid.Resources>
                             <Style TargetType="DataGridColumnHeader">
@@ -130,7 +150,7 @@
                             <DataGridTemplateColumn Width="1*" Header="{DynamicResource AddEditAnnotationWindow-Color}">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Rectangle Width="Auto" Height="Auto" Fill="{Binding Annotation.Color}"/>
+                                        <Rectangle Width="Auto" Height="Auto" Fill="{Binding Annotation.Color}" />
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>

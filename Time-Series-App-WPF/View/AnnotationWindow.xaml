@@ -22,7 +22,7 @@
 
         <local:AutoRefreshDataGrid Grid.Row="1" ItemsSource="{Binding AnnotationTypes}" AutoGenerateColumns="False" VerticalScrollBarVisibility="Visible"
                   CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeColumns="False" CanUserResizeRows="False" 
-                  CanUserReorderColumns="False" RowHeight="35" IsReadOnly="True">
+                  CanUserReorderColumns="False" RowHeight="35" IsReadOnly="True" EnableRowVirtualization="False">
 
             <DataGrid.Resources>
                 <Style TargetType="DataGridColumnHeader">
