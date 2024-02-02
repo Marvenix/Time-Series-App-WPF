@@ -11,6 +11,7 @@
 
     <Window.Resources>
         <local:ItemIndexConverter x:Key="ItemIndexConverter" />
+        <local:CountToBooleanConverter x:Key="CountToBooleanConverter" />
     </Window.Resources>
 
     <DockPanel>
@@ -18,7 +19,8 @@
 
             <MenuItem Header="{DynamicResource File}">
                 <MenuItem Header="{DynamicResource File-Open}" Click="OpenFile_Click" />
-                <MenuItem Header="{DynamicResource File-Save}"/>
+                <MenuItem Header="{DynamicResource File-Import}"  IsEnabled="{Binding IsEnabledImportButton}" Click="ImportFile_Click" />
+                <MenuItem Header="{DynamicResource File-Export}" IsEnabled="{Binding MadeAnnotations.Count, Converter={StaticResource CountToBooleanConverter}}" Click="ExportFile_Click"/>
                 <MenuItem Header="{DynamicResource File-Exit}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="Click">

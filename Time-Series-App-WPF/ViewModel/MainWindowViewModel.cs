@@ -59,12 +59,16 @@ namespace Time_Series_App_WPF.ViewModel
         [ObservableProperty]
         private bool _isCheckedAnnotationEditModeButton;
 
+        [ObservableProperty]
+        private bool _isEnabledImportButton;
+
         public event EventHandler? AnnotationWindowRequest;
         public event EventHandler? ProgramInfoWindowRequest;
         public event EventHandler? ChangeViewValuesRequest;
         public ObservableCollection<WpfPlot> MainWindowPlots { get { return _mainWindowPlots; } }
         public ObservableCollection<Annotation> AnnotationTypes { get { return _annotationTypes; } }
         public ObservableCollection<MadeAnnotation> MadeAnnotations { get { return _madeAnnotations; } }
+
 
 
         public MainWindowViewModel(IFileService fileService, IChartService<SignalChartData> signalChartService, ListDataHolder<Annotation> listDataHolder, 
@@ -316,6 +320,7 @@ namespace Time_Series_App_WPF.ViewModel
 
                 if (!_isFileLoaded)
                 {
+                    IsEnabledImportButton = true;
                     IsEnabledAnnotationEditModeButton = true;
                     _isFileLoaded = true;
                     SelectionChanged();
@@ -333,6 +338,126 @@ namespace Time_Series_App_WPF.ViewModel
             {
                 ShowMessageBox((string)Application.Current.TryFindResource("Exception-Unknown"), (string)Application.Current.TryFindResource("Error"));
             }
+        }
+
+        [RelayCommand]
+        private async Task ExportFile(string fileName)
+        {
+            try
+            {
+                await _fileService.ExportFile(fileName, MadeAnnotations);
+            }
+            catch (Exception)
+            {
+                ShowMessageBox((string)Application.Current.TryFindResource("Exception-ExportFile"), (string)Application.Current.TryFindResource("Error"));
+            }
+        }
+
+        [RelayCommand]
+        private async Task ImportFile(string fileName)
+        {
+            List<MadeAnnotation>? importedMadeAnnotations = null;
+            try
+            {
+                importedMadeAnnotations = await _fileService.ImportFile(fileName);
+            }
+            catch (Exception)
+            {
+                ShowMessageBox((string)Application.Current.TryFindResource("Error-InvalidData"), (string)Application.Current.TryFindResource("Error"));
+                return;
+            }
+
+            if (importedMadeAnnotations == null)
+            {
+                ShowMessageBox((string)Application.Current.TryFindResource("Error-WrongFile"), (string)Application.Current.TryFindResource("Error"));
+                return;
+            }
+
+            if (!ValidateData(importedMadeAnnotations))
+            {
+                ShowMessageBox((string)Application.Current.TryFindResource("Error-InvalidData"), (string)Application.Current.TryFindResource("Error"));
+                return;
+            }
+
+            foreach (var importedMadeAnnotation in importedMadeAnnotations!)
+            {
+                var annotation = _annotationTypes.FirstOrDefault(x => x.Id == importedMadeAnnotation.Annotation!.Id);
+
+                if (annotation == null || importedMadeAnnotation.Annotation!.Name != annotation.Name 
+                    || importedMadeAnnotation.Annotation.Color != annotation.Color)
+                {
+                    var newAnnotation = new Annotation
+                    {
+                        Name = importedMadeAnnotation.Annotation!.Name,
+                        Color = importedMadeAnnotation.Annotation!.Color
+                    };
+                    await _annotationService.CreateAsync(newAnnotation);
+                    _annotationTypes.Add(newAnnotation);
+
+                    importedMadeAnnotation.Annotation = newAnnotation;
+                }
+
+
+                if (_madeAnnotations.FirstOrDefault(x => x.Id == importedMadeAnnotation.Id) != null || importedMadeAnnotation.Id == Guid.Empty)
+                    importedMadeAnnotation.Id = Guid.NewGuid();
+
+
+                _madeAnnotations.Add(importedMadeAnnotation);
+                CreateGraphicAnnotation(importedMadeAnnotation);
+            }
+
+        }
+
+        private void CreateGraphicAnnotation(MadeAnnotation madeAnnotation)
+        {
+            var plotControl = _mainWindowPlots.FirstOrDefault(x => x.Uid == madeAnnotation.ChannelId);
+            var minY = plotControl!.Plot.Axes.Left.Min;
+            var maxY = plotControl!.Plot.Axes.Left.Max;
+            var colorToConvert = (System.Windows.Media.Color)ColorConverter.ConvertFromString(madeAnnotation.Annotation!.Color);
+
+            var rectangle = plotControl!.Plot.Add.Rectangle(madeAnnotation.Start, madeAnnotation.End, minY, maxY);
+
+            rectangle.FillStyle.Color = new ScottPlot.Color(colorToConvert.R, colorToConvert.G, colorToConvert.B).WithAlpha(.3);
+            rectangle.Label = madeAnnotation.Id.ToString();
+            rectangle.LineStyle = new LineStyle
+            {
+                AntiAlias = true,
+                Color = ScottPlot.Colors.Black,
+                Pattern = LinePattern.Solid,
+                Width = 2,
+                IsVisible = false
+            };
+            rectangle.IsVisible = true;
+
+            plotControl.Refresh();
+        }
+
+        private bool ValidateData(List<MadeAnnotation> importedMadeAnnotations)
+        {
+            foreach (var importedMadeAnnotation in importedMadeAnnotations)
+            {
+                if (importedMadeAnnotation.Start > importedMadeAnnotation.End)
+                    return false;
+
+                if ((importedMadeAnnotation.End - importedMadeAnnotation.Start) != importedMadeAnnotation.Duration)
+                    return false;
+
+                if (importedMadeAnnotation.Annotation == null)
+                    return false;
+
+                if (importedMadeAnnotation.Annotation.Name == null || importedMadeAnnotation.Annotation.Color == null)
+                    return false;
+
+                var plotControl = _mainWindowPlots.FirstOrDefault(x => x.Uid == importedMadeAnnotation.ChannelId);
+                
+                if (plotControl == null)
+                    return false;
+
+                if (plotControl.Plot.Axes.Title.Label.Text !=  importedMadeAnnotation.Channel)
+                    return false;
+            }
+
+            return true;
         }
 
         [RelayCommand]

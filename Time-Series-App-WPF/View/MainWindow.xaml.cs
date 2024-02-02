@@ -449,5 +449,31 @@ namespace Time_Series_App_WPF
                 viewModel!.RemoveMadeAnnotationCommand.Execute(id);
             }
         }
+
+        private void ExportFile_Click(object sender, RoutedEventArgs e)
+        {
+            var viewModel = this.DataContext as MainWindowViewModel;
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+
+            saveFileDialog.Filter = (string)Application.Current.TryFindResource("ImportExport-Filter");
+
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                viewModel!.ExportFileCommand.Execute(saveFileDialog.FileName);
+            }
+        }
+
+        private void ImportFile_Click(object sender, RoutedEventArgs e)
+        {
+            var viewModel = this.DataContext as MainWindowViewModel;
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+
+            openFileDialog.Filter = (string)Application.Current.TryFindResource("ImportExport-Filter");
+
+            if (openFileDialog.ShowDialog() == true && File.Exists(openFileDialog.FileName))
+            {
+                viewModel!.ImportFileCommand.Execute(openFileDialog.FileName);
+            }
+        }
     }
 }

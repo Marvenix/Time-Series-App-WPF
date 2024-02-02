@@ -4,7 +4,8 @@
 
     <s:String x:Key="File">File</s:String>
     <s:String x:Key="File-Open">Open</s:String>
-    <s:String x:Key="File-Save">Save</s:String>
+    <s:String x:Key="File-Import">Import</s:String>
+    <s:String x:Key="File-Export">Export</s:String>
     <s:String x:Key="File-Exit">Exit</s:String>
     <s:String x:Key="Edit">Edit</s:String>
     <s:String x:Key="Edit-Annotation">Annotations...</s:String>
@@ -46,5 +47,9 @@
     <s:String x:Key="Annotation-EditMode-Button">Edit annotations</s:String>
     <s:String x:Key="MainWindow-EditMadeAnnotation-Error">Something went wrong with editing made annotation!</s:String>
     <s:String x:Key="MainWindow-EditMadeAnnotationPolygons-Error">Something went wrong with editing made annotation graphic!</s:String>
+    <s:String x:Key="ImportExport-Filter">CSV file (*.csv)|*.csv</s:String>
+    <s:String x:Key="Exception-ExportFile">Can't export made annotations!</s:String>
+    <s:String x:Key="Error-InvalidData">Invalid data!</s:String>
+    <s:String x:Key="Error-WrongFile">The annotations to be imported are not intended for this file!</s:String>
 
 </ResourceDictionary>

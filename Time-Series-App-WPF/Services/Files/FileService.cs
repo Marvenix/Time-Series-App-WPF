@@ -1,19 +1,25 @@
 ﻿using BiosigLibWin64;
+using CsvHelper;
+using CsvHelper.Configuration;
 using ScottPlot;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Reflection.PortableExecutable;
 using System.Runtime;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Channels;
 using System.Threading.Tasks;
+using System.Windows.Documents;
 using System.Windows.Markup;
 using Time_Series_App_WPF.Enums;
 using Time_Series_App_WPF.Model;
@@ -23,6 +29,7 @@ namespace Time_Series_App_WPF.Services.Files
     public class FileService : IFileService
     {
         private readonly List<SignalChartData> _channelsData;
+        private string? _fileID;
 
         public List<SignalChartData> ChannelsData { get { return _channelsData; } }
 
@@ -124,6 +131,13 @@ namespace Time_Series_App_WPF.Services.Files
                 throw new FileLoadException();
             }
 
+            using (var md5 = MD5.Create())
+            using (var stream = File.OpenRead(path))
+            {
+                var hash = md5.ComputeHash(stream);
+                _fileID = BitConverter.ToString(hash).Replace("-", "");
+            }
+
             var samplesPerRecord = header.SPR;
             var numberOfRecords = header.NRec;
             var samplesPerChannel = samplesPerRecord * numberOfRecords;
@@ -137,6 +151,37 @@ namespace Time_Series_App_WPF.Services.Files
 
             Biosig.sclose(header);
             Biosig.destructHDR(header);
+        }
+
+        public async Task ExportFile(string path, ObservableCollection<MadeAnnotation> madeAnnotations)
+        {
+            using (var writer = new StreamWriter(path))
+            using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+            {
+                csv.WriteField(_fileID);
+                csv.NextRecord();
+                await csv.WriteRecordsAsync(madeAnnotations);
+            }
+        }
+
+        public async Task<List<MadeAnnotation>?> ImportFile(string path)
+        {
+            List<MadeAnnotation> list;
+
+            using (var reader = new StreamReader(path))
+            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+            {
+                csv.Context.RegisterClassMap<MadeAnnotationMap>();
+
+                await csv.ReadAsync();
+                var fileID = csv.GetField<string>(0);
+                if (fileID != _fileID)
+                    return null;
+
+                list = await csv.GetRecordsAsync<MadeAnnotation>().ToListAsync();
+            }
+
+            return list;
         }
     }
 }
