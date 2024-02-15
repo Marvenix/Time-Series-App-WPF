@@ -12,6 +12,7 @@
     <Window.Resources>
         <local:ItemIndexConverter x:Key="ItemIndexConverter" />
         <local:CountToBooleanConverter x:Key="CountToBooleanConverter" />
+        <local:NullToBooleanConverter x:Key="NullToBooleanConverter" />
     </Window.Resources>
 
     <DockPanel>
@@ -81,7 +82,7 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="5*"/>
+                <RowDefinition Height="4*"/>
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
 
@@ -103,7 +104,7 @@
                                     <EventSetter Event="MouseLeave" Handler="WpfPlot_MouseLeave" />
                                 </Style>
                             </ItemsControl.ItemContainerStyle>
-                             
+
                         </ItemsControl>
                     </ScrollViewer>
                 </TabItem>
@@ -201,9 +202,25 @@
 
             <Grid Grid.Row="1">
 
-                <TextBlock Text="{DynamicResource MainWindow-PickAnnotationType}" Height="30" Width="200" HorizontalAlignment="Left" Margin="50, 0, 0, 0" Padding="3" FontSize="14" />
+                <TextBlock Text="{DynamicResource MainWindow-PickPlot}" Height="30" Width="100" HorizontalAlignment="Left" Margin="25, 0, 0, 0" Padding="3" FontSize="14" />
 
-                <local:AutoRefreshComboBox Height="30" Width="200" ItemsSource="{Binding AnnotationTypes}" HorizontalAlignment="Right" Margin="0, 0, 50, 0" SelectedItem="{Binding SelectedAnnotation}">
+                <local:AutoRefreshComboBox Height="30" Width="100" ItemsSource="{Binding PlotsToAnalyzeCollection}" HorizontalAlignment="Left" Margin="135, 0, 0, 0" SelectedItem="{Binding SelectedPlotToAnalyze}">
+
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <TextBlock Text="{Binding Plot.Axes.Title.Label.Text}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                    
+                </local:AutoRefreshComboBox>
+
+                <Button Content="{DynamicResource MainWindow-Analyze}" Width="60" Height="30" HorizontalAlignment="Left" Margin="260, 0, 0, 0" IsEnabled="{Binding SelectedPlotToAnalyze, Converter={StaticResource NullToBooleanConverter}}" Command="{Binding ShowAnalyzeOptionsWindowCommand}" />
+
+                <TextBlock Text="{DynamicResource MainWindow-PickAnnotationType}" Height="30" Width="150" HorizontalAlignment="Right" Margin="0, 0, 225, 0" Padding="3" FontSize="14" />
+
+                <local:AutoRefreshComboBox Height="30" Width="200" ItemsSource="{Binding AnnotationTypes}" HorizontalAlignment="Right" Margin="0, 0, 25, 0" SelectedItem="{Binding SelectedAnnotation}">
 
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="SelectionChanged">

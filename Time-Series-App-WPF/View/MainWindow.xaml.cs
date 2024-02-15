@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
+using Numpy;
 using ScottPlot;
 using ScottPlot.AxisRules;
 using ScottPlot.Colormaps;
@@ -50,11 +51,18 @@ namespace Time_Series_App_WPF
             viewModel.AnnotationWindowRequest += new EventHandler(ShowAnnotationWindow);
             viewModel.ProgramInfoWindowRequest += new EventHandler(ShowProgramInfoWindow);
             viewModel.ChangeViewValuesRequest += new EventHandler(ChangeViewValues);
+            viewModel.AnalyzeOptionsWindowRequest += new EventHandler(ShowAnalyzeOptionsWindow);
         }
 
         private void ShowMessageBox(object? sender, MessageBoxEventArgs e)
         {
             MessageBox.Show(this, e.Message, e.Caption);
+        }
+
+        private void ShowAnalyzeOptionsWindow(object? sender, EventArgs e)
+        {
+            var analyzeOptionsWindow = App.AppHost!.Services.GetRequiredService<AnalyzeOptionsWindow>();
+            analyzeOptionsWindow.ShowDialog();
         }
 
         private void ShowAnnotationWindow(object? sender, EventArgs e)

@@ -25,6 +25,9 @@ using ScottPlot.Plottables;
 using CommunityToolkit.Mvvm.Messaging;
 using Time_Series_App_WPF.Messages;
 using System.Windows.Media;
+using System.ComponentModel;
+using System.Windows.Data;
+using System.Collections.Specialized;
 
 namespace Time_Series_App_WPF.ViewModel
 {
@@ -32,17 +35,27 @@ namespace Time_Series_App_WPF.ViewModel
     {
         private readonly IFileService _fileService;
         private readonly IChartService<SignalChartData> _signalChartService;
+        private readonly DataHolder<WpfPlot> _wpfPlotDataHolder;
         private readonly ListDataHolder<Annotation> _annotationListDataHolder;
+        private readonly ListDataHolder<MadeAnnotation> _madeAnnotationListDataHolder;
         private readonly IAnnotationService _annotationService;
         private readonly IMessenger _messenger;
         private ObservableCollection<WpfPlot> _mainWindowPlots;
         private ObservableCollection<Annotation> _annotationTypes;
         private ObservableCollection<MadeAnnotation> _madeAnnotations;
 
+        private CollectionViewSource _plotsToAnalyzeCollectionSource;
+
+        [ObservableProperty]
+        private ICollectionView _plotsToAnalyzeCollection;
+
         private bool _isFileLoaded;
 
         [ObservableProperty]
         private Annotation? _selectedAnnotation;
+
+        [ObservableProperty]
+        private WpfPlot? _selectedPlotToAnalyze;
 
         [ObservableProperty]
         private bool _isCheckedScrollNavigationButton;
@@ -65,26 +78,48 @@ namespace Time_Series_App_WPF.ViewModel
         public event EventHandler? AnnotationWindowRequest;
         public event EventHandler? ProgramInfoWindowRequest;
         public event EventHandler? ChangeViewValuesRequest;
+        public event EventHandler? AnalyzeOptionsWindowRequest;
         public ObservableCollection<WpfPlot> MainWindowPlots { get { return _mainWindowPlots; } }
         public ObservableCollection<Annotation> AnnotationTypes { get { return _annotationTypes; } }
         public ObservableCollection<MadeAnnotation> MadeAnnotations { get { return _madeAnnotations; } }
 
 
 
-        public MainWindowViewModel(IFileService fileService, IChartService<SignalChartData> signalChartService, ListDataHolder<Annotation> listDataHolder, 
-            IAnnotationService annotationService, IMessenger messenger)
+        public MainWindowViewModel(IFileService fileService, IChartService<SignalChartData> signalChartService, ListDataHolder<Annotation> annotationListDataHolder, 
+            IAnnotationService annotationService, IMessenger messenger, ListDataHolder<MadeAnnotation> madeAnnotationListDataHolder, DataHolder<WpfPlot> wpfPlotDataHolder)
         {
             _fileService = fileService;
             _signalChartService = signalChartService;
             _mainWindowPlots = new ObservableCollection<WpfPlot>();
             _annotationTypes = new ObservableCollection<Annotation>();
-            _annotationListDataHolder = listDataHolder;
+            _annotationListDataHolder = annotationListDataHolder;
             _annotationService = annotationService;
             _madeAnnotations = new ObservableCollection<MadeAnnotation>();
             _messenger = messenger;
             _messenger.Register<RemoveAnnotationItemMessage>(this);
             _messenger.Register<EditMadeAnnotationItemMessage>(this);
             _isCheckedScrollNavigationButton = true;
+            _plotsToAnalyzeCollectionSource = new CollectionViewSource();
+            _plotsToAnalyzeCollectionSource.Source = _mainWindowPlots;
+            _plotsToAnalyzeCollection = _plotsToAnalyzeCollectionSource.View;
+            _plotsToAnalyzeCollection.Filter = FilterPlotsForAnalyze;
+            _madeAnnotations.CollectionChanged += UpdatePlotsForAnalyze;
+            _madeAnnotationListDataHolder = madeAnnotationListDataHolder;
+            _wpfPlotDataHolder = wpfPlotDataHolder;
+        }
+
+        private void UpdatePlotsForAnalyze(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            PlotsToAnalyzeCollection.Refresh();
+        }
+
+        private bool FilterPlotsForAnalyze(object item)
+        {
+            if (item is WpfPlot plotControl)
+            {
+                return _madeAnnotations.Where(x => x.ChannelId == plotControl.Uid).Count() > 0;
+            }
+            return false;
         }
 
         private void ChangeViewValues()
@@ -212,9 +247,14 @@ namespace Time_Series_App_WPF.ViewModel
             this.ProgramInfoWindowRequest?.Invoke(this, new EventArgs());
         }
 
+        private void DisplayAnalyzeOptionsWindow()
+        {
+            this.AnalyzeOptionsWindowRequest?.Invoke(this, new EventArgs());
+        }
+
         private void SetupAndShowCharts()
         {
-            var listOfCharts = _signalChartService.SetupChartsFromChartsData(_fileService.ChannelsData);
+            var listOfCharts = _signalChartService.SetupChartsFromChartsData(new List<SignalChartData>(_fileService.ChannelsData));
 
             foreach (var chart in listOfCharts)
             {
@@ -246,6 +286,7 @@ namespace Time_Series_App_WPF.ViewModel
                     chart.Plot.Axes.SetLimitsX(0, 60);
                 }
 
+
                 chart.Refresh();
                 _mainWindowPlots.Add(chart);
             }
@@ -272,6 +313,16 @@ namespace Time_Series_App_WPF.ViewModel
         private void ShowProgramInfoWindow()
         {
             DisplayProgramInfoWindow();
+        }
+
+        [RelayCommand]
+        private void ShowAnalyzeOptionsWindow()
+        {
+            var channelId = SelectedPlotToAnalyze!.Uid;
+            var madeAnnotationList = _madeAnnotations.Where(x => x.ChannelId == channelId).ToList();
+            _wpfPlotDataHolder.Value = SelectedPlotToAnalyze;
+            _madeAnnotationListDataHolder.Data = madeAnnotationList;
+            DisplayAnalyzeOptionsWindow();
         }
 
         [RelayCommand]
@@ -396,7 +447,10 @@ namespace Time_Series_App_WPF.ViewModel
 
                     importedMadeAnnotation.Annotation = newAnnotation;
                 }
-
+                else
+                {
+                    importedMadeAnnotation.Annotation = annotation;
+                }
 
                 if (_madeAnnotations.FirstOrDefault(x => x.Id == importedMadeAnnotation.Id) != null || importedMadeAnnotation.Id == Guid.Empty)
                     importedMadeAnnotation.Id = Guid.NewGuid();

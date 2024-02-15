@@ -1,0 +1,64 @@
+﻿<Window x:Class="Time_Series_App_WPF.View.AnalyzeOptionsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Time_Series_App_WPF.View"
+        mc:Ignorable="d"
+        Title="{DynamicResource AnalyzeOptionsWindow-Title}" Height="300" Width="400">
+
+    <Window.Resources>
+        <local:AnalyzeButtonConverter x:Key="AnalyzeButtonConverter" />
+        <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="4*" />
+            <RowDefinition Height="1*" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="{DynamicResource AnalyzeOptionsWindow-AnnotationTypes}" Grid.Row="0" Grid.Column="0" Width="150" Height="30" VerticalAlignment="Top" Margin="0, 20, 0, 0" TextAlignment="Center" TextWrapping="Wrap" />
+
+        <ComboBox Grid.Row="0" Grid.Column="0" Width="150" Height="30" VerticalAlignment="Top" Margin="0, 70, 0, 0" ItemsSource="{Binding AnnotationTypes}" SelectedItem="{Binding SelectedAnnotation}" x:Name="AnnotationComboBox">
+            
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <Rectangle Fill="{Binding Color}" Width="16" Height="16" Margin="0,2,5,2" />
+                        <TextBlock Text="{Binding Name}" />
+                    </StackPanel>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+            
+        </ComboBox>
+
+        <TextBlock Text="{DynamicResource AnalyzeOptionsWindow-AnalyzeOptions}" Grid.Row="0" Grid.Column="1" Width="150" Height="30" VerticalAlignment="Top" Margin="0, 20, 0, 0" TextAlignment="Center" />
+
+        <RadioButton Content="{DynamicResource AnalyzeOptionsWindow-AnalyzeOption1}" Grid.Row="0" Grid.Column="1" Width="180" Height="Auto" VerticalAlignment="Top" Margin="0, 70, 0, 0" IsChecked="{Binding IsRadioButtonOneChecked}" x:Name="RadioButtonOne" />
+        <RadioButton Content="{DynamicResource AnalyzeOptionsWindow-AnalyzeOption2}" Grid.Row="0" Grid.Column="1" Width="180" Height="Auto" VerticalAlignment="Top" Margin="0, 90, 0, 0" IsChecked="{Binding IsRadioButtonTwoChecked}" x:Name="RadioButtonTwo" />
+
+        <TextBlock Text="{DynamicResource AnalyzeOptionsWindow-Parameter}" Grid.Row="0" Grid.Column="1" Width="100" Height="15" VerticalAlignment="Bottom" Margin="0, 0, 0, 82" TextAlignment="Center" Visibility="{Binding IsRadioButtonOneChecked, Converter={StaticResource BoolToVisibilityConverter}}" FontSize="10" />
+        <TextBox Grid.Row="0" Grid.Column="1" Width="100" Height="18" PreviewTextInput="TextBox_PreviewTextInput" VerticalAlignment="Bottom" Margin="0, 0, 0, 62" x:Name="ArgumentTextBox" 
+                 IsEnabled="{Binding IsRadioButtonOneChecked}" Text="{Binding Text}" Visibility="{Binding IsRadioButtonOneChecked, Converter={StaticResource BoolToVisibilityConverter}}"
+                 IsVisibleChanged="ArgumentTextBox_IsVisibleChanged" MaxLength="3" />
+
+        <TextBlock Text="{DynamicResource AnalyzeOptionsWindow-Warning}" Grid.Row="0" Grid.ColumnSpan="2" Width="300" Height="18" VerticalAlignment="Bottom" Margin="0, 0, 0, 10" TextAlignment="Center" Foreground="Red" Visibility="{Binding IsRadioButtonOneChecked, Converter={StaticResource BoolToVisibilityConverter}}" />
+
+        <Button Content="{DynamicResource MainWindow-Analyze}" Grid.Row="1" Grid.ColumnSpan="2" Command="{Binding PerformAnalysisCommand}">
+            <Button.IsEnabled>
+                <MultiBinding Converter="{StaticResource AnalyzeButtonConverter}">
+                    <Binding ElementName="AnnotationComboBox" Path="SelectedItem" />
+                    <Binding ElementName="RadioButtonOne" Path="IsChecked" />
+                    <Binding ElementName="RadioButtonTwo" Path="IsChecked" />
+                    <Binding ElementName="ArgumentTextBox" Path="Text" />
+                </MultiBinding>
+            </Button.IsEnabled>
+        </Button>
+    </Grid>
+</Window>

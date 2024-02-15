@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Time_Series_App_WPF.Model
 {
-    public class SignalChartData : ChartData
+    public class SignalChartDataDouble : SignalChartData
     {
-        public float Frequency { get; set; }
+        public required double[] Values { get; set; }
     }
 }

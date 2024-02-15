@@ -51,5 +51,18 @@
     <s:String x:Key="Exception-ExportFile">Can't export made annotations!</s:String>
     <s:String x:Key="Error-InvalidData">Invalid data!</s:String>
     <s:String x:Key="Error-WrongFile">The annotations to be imported are not intended for this file!</s:String>
+    <s:String x:Key="MainWindow-PickPlot">Plot to analyze:</s:String>
+    <s:String x:Key="MainWindow-Analyze">Analyze</s:String>
+    <s:String x:Key="AnalyzeOptionsWindow-AnnotationTypes">Choose annotation type for analysis:</s:String>
+    <s:String x:Key="AnalyzeOptionsWindow-AnalyzeOptions">Choose analyze method:</s:String>
+    <s:String x:Key="AnalyzeOptionsWindow-AnalyzeOption1">Dynamic Time Warping (DTW)</s:String>
+    <s:String x:Key="AnalyzeOptionsWindow-AnalyzeOption2">Cross-correlation</s:String>
+    <s:String x:Key="AnalyzeOptionsWindow-Title">Analysis configuration</s:String>
+    <s:String x:Key="AnalyzeResultsWindow-Title">Analysis results</s:String>
+    <s:String x:Key="AnalyzeResultsWindow-Button">Save results</s:String>
+    <s:String x:Key="PerformAnalysis-Error">Something went wrong with analysis!</s:String>
+    <s:String x:Key="Exception-SaveResults">Can't save the file!</s:String>
+    <s:String x:Key="AnalyzeOptionsWindow-Warning">This operation might take a while!</s:String>
+    <s:String x:Key="AnalyzeOptionsWindow-Parameter">Step size (samples):</s:String>
 
 </ResourceDictionary>

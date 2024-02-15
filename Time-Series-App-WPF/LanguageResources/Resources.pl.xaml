@@ -51,5 +51,18 @@
     <s:String x:Key="Exception-ExportFile">Wystąpił problem z eksportem zrobionych adnotacji!</s:String>
     <s:String x:Key="Error-InvalidData">Nieprawidłowe dane!</s:String>
     <s:String x:Key="Error-WrongFile">Adnotacje do zaimportowania nie są przeznaczone dla tego pliku!</s:String>
+    <s:String x:Key="MainWindow-PickPlot">Wykres do analizy:</s:String>
+    <s:String x:Key="MainWindow-Analyze">Analizuj</s:String>
+    <s:String x:Key="AnalyzeOptionsWindow-AnnotationTypes">Wybierz rodzaj adnotacji do analizy:</s:String>
+    <s:String x:Key="AnalyzeOptionsWindow-AnalyzeOptions">Wybierz metodę analizy:</s:String>
+    <s:String x:Key="AnalyzeOptionsWindow-AnalyzeOption1">Dynamiczna transformata czasowa (DTW)</s:String>
+    <s:String x:Key="AnalyzeOptionsWindow-AnalyzeOption2">Korelacja krzyżowa</s:String>
+    <s:String x:Key="AnalyzeOptionsWindow-Title">Konfiguracja analizy</s:String>
+    <s:String x:Key="AnalyzeResultsWindow-Title">Rezultaty analizy</s:String>
+    <s:String x:Key="AnalyzeResultsWindow-Button">Zapisz rezultaty</s:String>
+    <s:String x:Key="PerformAnalysis-Error">Nie udało się przeprowadzić analizy!</s:String>
+    <s:String x:Key="Exception-SaveResults">Błąd zapisu pliku!</s:String>
+    <s:String x:Key="AnalyzeOptionsWindow-Warning">Ta operacja może chwilę potrwać!</s:String>
+    <s:String x:Key="AnalyzeOptionsWindow-Parameter">Rozmiar kroku (próbki):</s:String>
 
 </ResourceDictionary>

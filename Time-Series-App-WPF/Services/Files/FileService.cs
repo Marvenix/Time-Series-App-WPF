@@ -28,14 +28,14 @@ namespace Time_Series_App_WPF.Services.Files
 {
     public class FileService : IFileService
     {
-        private readonly List<SignalChartData> _channelsData;
+        private readonly List<SignalChartDataFloat> _channelsData;
         private string? _fileID;
 
-        public List<SignalChartData> ChannelsData { get { return _channelsData; } }
+        public List<SignalChartDataFloat> ChannelsData { get { return _channelsData; } }
 
         public FileService()
         {
-            _channelsData = new List<SignalChartData>();
+            _channelsData = new List<SignalChartDataFloat>();
         }
 
         private int AssignValuesToChartData(double[] data, int channelLength, int startArrayIndex)
@@ -102,7 +102,7 @@ namespace Time_Series_App_WPF.Services.Files
             {
                 var channelInfo = Biosig.biosig_get_channel(header, channel);
 
-                var channelData = new SignalChartData()
+                var channelData = new SignalChartDataFloat()
                 {
                     Values = new float[samplesPerChannel]
                 };
@@ -161,6 +161,19 @@ namespace Time_Series_App_WPF.Services.Files
                 csv.WriteField(_fileID);
                 csv.NextRecord();
                 await csv.WriteRecordsAsync(madeAnnotations);
+            }
+        }
+
+        public async Task ExportFile(string path, IEnumerable<double[]> data)
+        {
+            using (var writer = new StreamWriter(path))
+            using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+            {
+                foreach (var doubleArray in data)
+                {
+                    await csv.WriteRecordsAsync(doubleArray);
+                    csv.WriteField("", false);
+                }
             }
         }
 

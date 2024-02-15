@@ -10,9 +10,10 @@ namespace Time_Series_App_WPF.Services.Files
 {
     public interface IFileService
     {
-        public List<SignalChartData> ChannelsData { get; }
+        public List<SignalChartDataFloat> ChannelsData { get; }
         public void OpenFile(string path);
         public Task ExportFile(string path, ObservableCollection<MadeAnnotation> madeAnnotations);
+        public Task ExportFile(string path, IEnumerable<double[]> data);
         public Task<List<MadeAnnotation>?> ImportFile(string path);
     }
 }

@@ -51,7 +51,15 @@ namespace Time_Series_App_WPF.Services.Charts
                 wpfPlot.Plot.Title(chartData.Label);
             }
 
-            wpfPlot.Plot.Add.Signal(chartData.Values, 1 / chartData.Frequency);
+            if (chartData is SignalChartDataFloat chartDataFloat)
+            {
+                wpfPlot.Plot.Add.Signal(chartDataFloat.Values, 1 / chartData.Frequency);
+            }
+
+            if (chartData is SignalChartDataDouble chartDataDouble)
+            {
+                wpfPlot.Plot.Add.Signal(chartDataDouble.Values, 1 / chartData.Frequency);
+            }
 
             wpfPlot.Plot.Axes.Rules.Clear();
 

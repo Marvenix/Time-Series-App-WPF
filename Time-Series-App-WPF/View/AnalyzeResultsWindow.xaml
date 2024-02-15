@@ -1,0 +1,35 @@
+﻿<Window x:Class="Time_Series_App_WPF.View.AnalyzeResultsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:local="clr-namespace:Time_Series_App_WPF.View"
+        mc:Ignorable="d"
+        Title="{DynamicResource AnalyzeResultsWindow-Title}" Height="450" Width="800">
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="3*" />
+            <RowDefinition Height="3*" />
+            <RowDefinition Height="1*" />
+        </Grid.RowDefinitions>
+
+        <ContentControl Grid.Row="0" Content="{Binding MergedMadeAnnotationPlot}" />
+
+        <ContentControl Grid.Row="1" Content="{Binding AnalysisResultsPlot}" />
+
+        <Button Grid.Row="2" Content="{DynamicResource AnalyzeResultsWindow-Button}" FontSize="16" Click="Button_Click" />
+    </Grid>
+
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding PerformAnalysisCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    
+</Window>

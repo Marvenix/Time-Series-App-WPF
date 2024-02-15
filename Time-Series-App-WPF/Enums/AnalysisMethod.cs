@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Time_Series_App_WPF.Model
+namespace Time_Series_App_WPF.Enums
 {
-    public class SignalChartData : ChartData
+    public enum AnalysisMethod
     {
-        public float Frequency { get; set; }
+        DTW,
+        CrossCorrelation
     }
 }
