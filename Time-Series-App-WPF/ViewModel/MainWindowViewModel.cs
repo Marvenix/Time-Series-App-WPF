@@ -28,6 +28,7 @@ using System.Windows.Media;
 using System.ComponentModel;
 using System.Windows.Data;
 using System.Collections.Specialized;
+using ScottPlot.Control;
 
 namespace Time_Series_App_WPF.ViewModel
 {
@@ -286,6 +287,8 @@ namespace Time_Series_App_WPF.ViewModel
                     chart.Plot.Axes.SetLimitsX(0, 60);
                 }
 
+                var interaction = chart.Interaction as Interaction;
+                interaction!.Actions.ToggleBenchmark = delegate { };
 
                 chart.Refresh();
                 _mainWindowPlots.Add(chart);

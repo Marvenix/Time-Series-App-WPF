@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ScottPlot.AxisRules;
+using ScottPlot.Control;
 using ScottPlot.Plottables;
 using ScottPlot.WPF;
 using System;
@@ -115,6 +116,10 @@ namespace Time_Series_App_WPF.ViewModel
                 plot.Height = 175;
                 LockedVertical verticalRule = new LockedVertical(plot.Plot.Axes.Left);
                 plot.Plot.Axes.Rules.Add(verticalRule);
+
+                var interaction = plot.Interaction as Interaction;
+                interaction!.Actions.ToggleBenchmark = delegate { };
+
                 plot.Refresh();
             }
 
